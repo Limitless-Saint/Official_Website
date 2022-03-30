@@ -1,0 +1,21 @@
+---
+title: "About this site"
+description: |
+  This will be a description of me and my journey up to this point. Initially I thought this would be a quick little write up, but I've realized that it will take a bit more reflecting. This realization came about after completeing the "personal brand" session from the U of T tutorial. ( Include most of this in reflection piece). Talk about having "filler content" in there, but didn't feel right putting in and decided to leave open.
+
+output: 
+  distill::distill_article:
+    toc: true
+---
+
+# Heading 1
+
+
+
+# Heading 2
+
+
+
+# Heading 3
+
+

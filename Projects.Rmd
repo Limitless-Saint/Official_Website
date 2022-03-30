@@ -1,0 +1,266 @@
+---
+title: "Projects"
+description: |
+ This section contains previous academic assignments that I did in previous courses at the insitutions I've attended. Each post will contain an initial description of the course that the project was for, what the assignment guidelines were, and finally the presentation of the assignment itself.  
+ 
+output: 
+  distill::distill_article:
+    toc: TRUE
+---
+# Disclaimer
+
+ For the moment I will only include the mini - portfolio assignment as a presentation, but after some research I feel that using a blog format will allow me include assignments in a more organized fashion. I also have to figure out how to customize headers for individual assignments, but I think that may be solved once I use thee blog format for this part of my site. I have yet to figure out how to include blogs properly in my site. This will come soon. 
+
+\newpage
+
+# Introduction
+
+  The preparation of this mini-portfolio has served as an introduction of the level of proficiency that one requires to be a professional in the world of statistics. Up to this point in my journey in the world of statistics, all the skills that I've developed have been strictly technical with not much context of their applicability. This mini-portfolio has brought awareness of how these things all interact. Applying technical skills such as performing simple hypothesis tests, analyzing the test's results, and drawing inferences from those results. Writing about the results in a manner that is understandable for your given audience. Creating visualizations through the use of the ggplot2 package to communicate the ideas of the techincal results in a manner that can create understanding for stakeholders. All these different skills were applied while composing this mini-portfolio. Providing a first look at the various facets of one's overall development that may need to be polished up when the time arrives to apply for a job or grad school.
+
+\newpage
+
+# Statistical skills sample
+
+## Setting up libraries
+```{r, message=FALSE}
+# Reading the necessary R libraries into R Studio to be able to perform analysis
+library(tidyverse)
+library(readxl)
+library(janitor)
+```
+
+
+
+## Visualizing the variance of a Binomial random variable for varying proportions
+
+```{r, fig.height=3, fig.cap="Proportion tending to 0.50 for n1 = 30"}
+
+n1 = 30
+n2 = 400
+
+props = seq(from = 0, to = 1, by = 0.01)
+
+# initialized two vectors to populate with 
+
+n1_var = vector(mode = "numeric", length = length(props))
+n2_var = vector(mode = "numeric", length = length(props))
+
+
+# populated vector of variances using for-loop
+
+for(i in 1:length(props)){
+  
+  n1_var[i] = n1 * props[i] * (1 - props[i])
+  n2_var[i] = n2 * props[i] * (1 - props[i])
+  
+}
+
+
+for_plot = tibble("props" = props, "var_of_n1" = n1_var, "var_of_n2" = n2_var)
+
+# plotting of graph n1
+
+graph_for_n1 = for_plot %>% ggplot(mapping = aes(x = props, y = var_of_n1)) + geom_point() + theme_minimal() + 
+  labs(x ="Proportions", y = "Var of n1", title = str_c("Variance of Binomial RV with n1 = ", n1), caption = "Created by St. Clair Pennyfeather")
+graph_for_n1
+
+
+```
+
+```{r, fig.height=3, fig.cap="Proportion tending to 0.50 for n2 = 400"}
+
+# plotting of graph n2
+
+graph_for_n2 = for_plot %>% ggplot(mapping = aes(x = props, y = var_of_n2)) + geom_point() + theme_minimal() + 
+  labs(x ="Proportions", y = "Var of n2", title = str_c("Variance of Binomial RV with n2 = ", n2), caption = "Created by St. Clair Pennyfeather")
+graph_for_n2
+```
+
+\newpage
+
+## Demonstrating frequentist confidence intervals as long-run probabilities of capturing a population parameter
+
+```{r, fig.width=9, fig.height=11, fig.cap = "Exploring our long-run 'confidence' in confidence intervals. This figure shows how often 95% confidence intervals from 100 simple random samples capture the population mean. The population was simulated from N(10, 2)"}
+
+set.seed(716)
+
+sim_mean = 10
+sim_sd = 2
+sample_size = 30
+number_of_samples = 100
+deg_free = sample_size - 1
+
+
+tmult = qt(p = 1 - 0.05/2, df = deg_free)
+
+population = rnorm(n = 1000, mean = sim_mean, sd = sim_sd)
+
+pop_param = mean(population)
+
+# Getting 100 samples of size 30, had to unlist in order to use as a vector
+
+sample_set = unlist(lapply(1:number_of_samples,
+                            function (x) sample(population, size = sample_size)))
+
+group_id = rep(x = 1:number_of_samples, each = sample_size)
+
+# Creation of tibble to input the observations
+
+my_sim = tibble("group_id" = group_id, "sample_set" = sample_set)
+
+ci_vals = tibble( my_sim %>% group_by(group_id) %>% summarise(mean = mean(sample_set), sd =  sd(sample_set)))
+
+lower = vector(length = number_of_samples)
+upper = vector(length = number_of_samples)
+capture = vector(length = number_of_samples)
+
+# Had to initilaize the columns of tibble with NA values, this is due to a bug 
+#in the tibble package with regards to populating the data set
+ci_vals$lower = NA
+ci_vals$upper = NA
+ci_vals$capture = NA
+
+# Populated tibble with values for the confidence intervals
+
+for(i in 1:number_of_samples){
+  
+ci_vals$lower[i] = ci_vals$mean[i]  - tmult*(ci_vals$sd[i]/sqrt(sample_size))
+ci_vals$upper[i] = ci_vals$mean[i]  + tmult*(ci_vals$sd[i]/sqrt(sample_size))
+ci_vals$capture[i] = ((ci_vals$lower[i] <= pop_param) & (pop_param <= ci_vals$upper[i]))
+  }
+
+
+proportion_capture = sum(ci_vals$capture == TRUE)/number_of_samples
+
+# Visualization of the confidence intervals for our approximation to the population mean
+
+confid_ints = ggplot(data = ci_vals, mapping = aes(x =group_id , y = mean , ymin = lower, ymax = upper, color = capture)) + 
+  geom_point() + geom_errorbar() + geom_hline(mapping = aes(yintercept = pop_param), linetype = 2) + 
+  scale_color_manual(name = "CI captures population\n parameter" ,values = c("#B80000", "#122451")) + coord_flip() + theme_minimal() + 
+  theme(legend.key.width = unit(x = 1, units = "cm"), legend.title = element_text(size = 10)) + labs(x = "Means", y = "Group ID", 
+  title = str_c("CI Plot for Estimation of Mean based on N~(", sim_mean,",",sim_sd,")"), 
+  caption = "Created by St. Clair Pennyfeather in STA303/1002, Winter 2022")
+
+confid_ints
+
+
+```
+
+`r proportion_capture*100` % of my intervals capture the the population parameter.
+
+In our plot observe that we have calculated the mean value of our population as `r round(pop_param, 3)`. We do this because this serves as an illustration of the theory that statisticians use in practice (i.e the real world). By performing a simulation we hope to illustrate what it is we are attempting to accomplish on a larger scale. In the real world it is very unlikely that we will know what the mean of the population really is, but we can estimate it. This estimating is done through a series of sampling procedures. With these estimations of the population mean we create confidence intervals which serve to measure the level of uncertainty we have in our estimation of the population mean. Our aim is to accurately measure the population mean which we hope we have done through our array of techniques. But recall this is only an estimate of the TRUE population mean. We cannot get the true population mean because it would require recording a measurement for every single unit in the population which is not feasible to do based on the sizes of populations. But for illustration of how we go about this we can perform a simulation and form there extrapolate.  
+
+## Investigating whether there is an association between cGPA and STA303/1002 students correctly answering a question on global poverty rates
+
+### Goal
+
+Our goal is to see if we can infer that a person's cGPA is enough to determine if the student got the correct answer on our survey. 
+
+
+### Wrangling the data
+
+```{r}
+cgpa_data = 
+  read_excel("C:/Users/Saint/Documents/School_2017_onward/2021-2022/STA303/Mini_Portfolio_1/sta303-w22-mini-portfolio/sta303-w22-mini-portfolio/data/sta303-mini-portfolio-poverty.xlsx")
+
+cgpa_data =  clean_names(dat = cgpa_data)
+
+cgpa_data =  cgpa_data %>% 
+  rename(global_poverty_ans = in_the_last_20_years_the_proportion_of_the_world_population_living_in_extreme_poverty_has, 
+              cgpa = what_is_your_c_gpa_at_u_of_t_if_you_dont_want_to_answer_you_can_put_a_0)
+
+# filtering of data to include only cGPA values that make sense.
+
+cgpa_data = cgpa_data %>% filter(is.na(cgpa) != TRUE, cgpa < 4.1) %>% mutate(correct = (global_poverty_ans == 'Halved')) 
+```
+
+### Visualizing the data
+
+```{r, fig.height=7}
+# Graphing of the cGPA data
+
+cgpa_data %>% group_by(correct) %>%  ggplot(mapping = aes(x = cgpa,color = "red", fill = cgpa)) + geom_histogram(bins = 25) + facet_wrap(facets = vars(correct), nrow = 2) + 
+  labs(x = "cgpa", title = "Distributions of cgpa by TRUE/FALSE")
+
+```
+
+
+### Testing
+
+  The tests that were performed were a two sided paired t-test along with a Wilcoxon paired test (also known as Mann-Whitney U). The decision to perform the t-test is down to the objective of our test which is to determine a difference in means between groups in our sample. We are doing this based on the assumption that our whole sample came from a normally distributed population. . In this case the population of cGPAs. But since we cannot be sure that our assumption of normality is going to be able to hold we perform a non-parametric test, which in this case is the Wilcoxon paired test. Based on the visualization of the distribution of our data we may think that the population is not normally distributed, but this possible flaw in the visualization is due to the choice of s subset of the sample to not disclose one's cGPA. Keeping this in mind this is why we also perform the Wicoxon test
+
+```{r}
+# created filtered data frames to differentiate the two groups under consideration
+
+true_vector = cgpa_data %>% filter(correct == TRUE)
+false_vector = cgpa_data %>% filter(correct != TRUE)
+
+#performed various tests and confirmed them through use of the lm() model
+
+signed_rank = function(x){ sign(x) * rank(abs(x))} # to be used in the lm() model
+
+t.test(x = true_vector$cgpa, y = false_vector$cgpa, mu = 0, var.equal = TRUE, paired = TRUE)
+
+t.test(formula = cgpa ~ correct  , mu = 0, var.equal = TRUE, paired = TRUE, data = cgpa_data)
+
+binded_col = bind_cols(true_vector, false_vector, .name_repair = "unique") # in order to compare differences using an lm() model I had to put the two groupings 
+# in a data set organized by whether they answered TRUE or FALSE.
+
+lm_of_cgpa_mean_diff = lm(formula = (binded_col$cgpa...3 - binded_col$cgpa...7) ~ 1, data = binded_col)
+
+summary(lm_of_cgpa_mean_diff)
+
+# Non parametric comparison of the difference in means
+wilcox.test(formula = cgpa ~ correct, mu = 0, paired = TRUE, data = cgpa_data)
+
+lm_of_cgpa_mean_diff_np = lm(signed_rank(true_vector$cgpa - false_vector$cgpa) ~ 1)
+
+summary(lm_of_cgpa_mean_diff_np)
+```
+
+  From the outputs that the various tests produced we see that the assumption of normality does indeed hold. This is shown through comparing the p-values between the parametric t-tests and the non-parametric west (Wilcoxon), which produce p-values of 0.225 and 0.1918 respectively. To verify these results we performed linear regressions to approximate the difference in means. These provided values of 0.225 and 0.137 for the parametric and non-parametric cases respectively. From these summaries we have no evidence to reject the null hypothesis assumption of there being a difference in the mean cGPA between people who answered correct and incorrect on the survey. 
+
+\newpage
+
+# Writing sample
+
+### Introduction
+
+  To obtain any level of success today in the professional world, one needs to equip themselves with an array of skill sets. One way to categorize the different skill sets is by soft skills and analytic skills. Soft skills can be seen as personality traits which characterize one's relationship in a social environment. In comparison analytic skills would be those that are specific to individual professions and more technical. What follows is a description of the skills which would allow me to contribute to the larger goals of the institution. Followed by skills working for this institution would allow me to develop.
+
+### Soft skills
+
+  Communication skills are seen as a necessary skill set in order to be able to be seen as a potential candidate. The need for communication skills can be seen through the example of collaboration. These projects are large and cannot be done by one individual. As such the requirement to be able to communicate and get along with people from different backgrounds is necessary in order to hit targets. 
+  Being able to demonstrate accountability and ownership of projects are signs of leadership being illustrated. All leadership does not have to be from purely motivational speeches, but also the actions that follow those speeches. By owning a project from start to finish one shows the ability to lead and take control when necessary.
+  These two skills are ones that are ones that are looked for by Yelp in order to drive their business forward.
+
+### Analytic skills
+
+  Critical thinking is one of the most sought after analytical skills. It is with critical thinking that one is able to understand and extrapolate on statistical inferences and analyses. Critical thinking allows one to deconstruct problems in a structured way and develop solutions. It is not explicitly stated in the job posting, but the requirement for solid understanding in statistical practices is one example of Yelp's desire for critical thinkers.
+  Creativity is another skill that is desired in the job description. This can be seen in the request to have the ability to design statistical models. Another place this is shown is in defining the key performance metrics that Yelp would use in the future.
+
+### Connection to studies
+
+   Education doesn't end after acquiring a professional designation. As such the opportunities are endless. As such there are always areas to improve on. One can take writing courses to be a better written communicator, presentation courses if there is a weakness in vocal communication. If the skills that one wants to work on are more technical, there are advanced stats courses one can take. One can also learn new software languages such as SQL. Graduate school is another option for those inclined.  
+
+### Conclusion
+
+   The soft skills of communication and leadership along with the analytical skills of critical thinking and creativity provide a solid foundation upon which one would be able to feel comfortable in the applicant pool for a position like the one being offered by Yelp. Beyond Yelp the opportunities to further one's skills does not end once a formal degree is acquired.
+
+**Word count:** 517 words (counting headers)
+
+\newpage
+
+# Reflection
+
+### What is something specific that I am proud of in this mini-portfolio?
+
+  One of the things I'm proud of in this mini portfolio was being able to digest what was requested of me in each of the tasks and formulate a course of action by applying the techniques and skills I had learned in previous courses. I had a rough time in my lower years stats courses and needed to take time off to strengthen my foundations. It's a good feeling to see that that work has reaped results in just my overall ability to process the whole picture. Without the need to continuously go back to review what "this" or "that" concept was about I was able to focus on the analysis at hand.
+
+### How might I apply what I've learned and demonstrated in this mini-portfolio in future work and study, after STA303/1002?
+
+  The importance of visualizations to be able to give yourself a clearer "picture" of what may be happening in your data. Using the tidyverse tools allows us to have a grounding in being able to convey ideas in an easier to comprehend way. An example of where this would come in handy is should the situation arise that I need to provide a summary of a certain measurement, such as the mean, to a group of stakeholders. They may not understand all of the machinery under the hood when it comes to presenting results, but a nice picture of the confidence intervals and an explanation of them may help to provide understanding. Another skill that can be applied in future will be thethought process needed to considered which statistical tests one chooses to use.
+  
+### What is something I'd do differently next time?
+
+  In the realm of doing things different, I would say beginning the assignment earlier by incorporating it into the time I allocate to readings. To at least have an idea of what the questions are asking and how what I'm reading at the current time can be applied to solving the task. I have the practice of wanting to finish all my readings first and then begin any exercises. But perhaps that is going to have to change to be more efficient and prevent the need for putting off other parts of my life at the expense of rushing to finish an assignment on time. Also allowing time to properly proofread my work.

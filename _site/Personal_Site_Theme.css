@@ -1,0 +1,164 @@
+
+/* base variables */
+
+/* Edit the CSS properties in this file to create a custom
+   Distill theme. Only edit values in the right column
+   for each row; values shown are the CSS defaults.
+   To return any property to the default,
+   you may set its value to: unset
+   All rows must end with a semi-colon.                      */
+
+/* Optional: embed custom fonts here with `@import`          */
+/* This must remain at the top of this file.                 */
+@import url('https://fonts.googleapis.com/css2?family=Hurricane&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital@1&family=Work+Sans:wght@300&display=swap');
+
+
+html {
+  /*-- Main font sizes --*/
+  --title-size:      50px;
+  --body-size:       1.06rem;
+  --code-size:       14px;
+  --aside-size:      12px;
+  --fig-cap-size:    13px;
+  /*-- Main font colors --*/
+  --title-color:     white;
+  --header-color:    white;
+  --body-color:      white; 
+  --aside-color:     white;
+  --fig-cap-color:   white;
+  /*-- Specify custom fonts ~~~ must be imported above   --*/
+  --heading-font:   'Hurricane', cursive;
+  --mono-font:       monospace;
+  --body-font:      'Poppins', sans-serif;
+  --navbar-font:    'Hurricane', cursive;/* websites + blogs only */
+}
+
+/*-- ARTICLE METADATA --*/
+d-byline {
+  --heading-size:    0.6rem;
+  --heading-color:   rgba(0, 0, 0, 0.5);
+  --body-size:       0.8rem;
+  --body-color:      rgba(0, 0, 0, 0.8);
+}
+
+/*-- ARTICLE TABLE OF CONTENTS --*/
+.d-contents {
+  --heading-size:    25px;
+  --contents-size:   13px;
+}
+
+/*-- ARTICLE APPENDIX --*/
+d-appendix {
+  --heading-size:    15px;
+  --heading-color:   rgba(0, 0, 0, 0.65);
+  --text-size:       0.8em;
+  --text-color:      rgba(0, 0, 0, 0.5);
+}
+
+/*-- WEBSITE HEADER + FOOTER --*/
+/* These properties only apply to Distill sites and blogs  */
+
+.distill-site-header {
+  --title-size:       30px;
+  --text-color:       rgba(255, 255, 255, 0.8);
+  --text-size:        30px;
+  --hover-color:      black;
+  --bkgd-color:    background: hsla(272, 100%, 50%, 1);
+
+background: linear-gradient(315deg, hsla(272, 100%, 50%, 1) 19%, hsla(188, 100%, 49%, 1) 100%, hsla(240, 94%, 50%, 1) 100%);
+
+background: -moz-linear-gradient(315deg, hsla(272, 100%, 50%, 1) 19%, hsla(188, 100%, 49%, 1) 100%, hsla(240, 94%, 50%, 1) 100%);
+
+background: -webkit-linear-gradient(315deg, hsla(272, 100%, 50%, 1) 19%, hsla(188, 100%, 49%, 1) 100%, hsla(240, 94%, 50%, 1) 100%);
+
+filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#8800ff", endColorstr="#00d9fa", GradientType=1 );
+}
+
+.distill-site-footer {
+  --text-color:       white;
+  --text-size:        15px;
+  --hover-color:      black;
+  --bkgd-color:       background: hsla(272, 100%, 50%, 1);
+
+background: linear-gradient(315deg, hsla(272, 100%, 50%, 1) 0%, hsla(235, 98%, 65%, 1) 0%, hsla(188, 100%, 49%, 1) 24%, hsla(240, 94%, 50%, 1) 100%);
+
+background: -moz-linear-gradient(315deg, hsla(272, 100%, 50%, 1) 0%, hsla(235, 98%, 65%, 1) 0%, hsla(188, 100%, 49%, 1) 24%, hsla(240, 94%, 50%, 1) 100%);
+
+background: -webkit-linear-gradient(315deg, hsla(272, 100%, 50%, 1) 0%, hsla(235, 98%, 65%, 1) 0%, hsla(188, 100%, 49%, 1) 24%, hsla(240, 94%, 50%, 1) 100%);
+
+filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#8800FF", endColorstr="#4E5DFD", GradientType=1 );
+
+}
+
+/*-- Additional custom styles --*/
+/* Add any additional CSS rules below                      */
+
+
+/* Change background colour of web page */
+
+body {
+background: hsla(272, 100%, 50%, 1);
+
+background: linear-gradient(315deg, hsla(272, 100%, 50%, 1) 0%, hsla(241, 98%, 65%, 1) 33%, hsla(188, 100%, 49%, 1) 56%, hsla(240, 94%, 50%, 1) 100%);
+
+background: -moz-linear-gradient(315deg, hsla(272, 100%, 50%, 1) 0%, hsla(241, 98%, 65%, 1) 33%, hsla(188, 100%, 49%, 1) 56%, hsla(240, 94%, 50%, 1) 100%);
+
+background: -webkit-linear-gradient(315deg, hsla(272, 100%, 50%, 1) 0%, hsla(241, 98%, 65%, 1) 33%, hsla(188, 100%, 49%, 1) 56%, hsla(240, 94%, 50%, 1) 100%);
+
+filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#8800ff", endColorstr="#5551FD", GradientType=1 );
+}
+
+
+/* colours of text on landing home page */
+
+h1 {
+  color: white;
+}
+
+h2 {
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  font-size: 60px;
+
+}
+
+p {
+  color: white;
+}
+
+
+footer {
+       width: 100%;
+       position: fixed;
+       bottom: 0;
+       left: 0;
+       right: 0;
+}
+
+
+
+
+/* button colours on landing page */
+
+/* Style the buttons */
+.btn {
+  border: white;
+  outline: black;
+  padding: 12px 16px;
+  color: white;
+  background-color: var(--bkgd-color, none);
+  cursor: pointer;
+}
+
+/* Add a light grey background on mouse-over */
+.btn:hover {
+  background-color: black;
+  color: white
+}
+
+/* Add a dark background to the active button */
+.btn.active {
+  background-color: white;
+  color: red;
+}

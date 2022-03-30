@@ -1,0 +1,24 @@
+---
+title: "Research"
+description: "Area will include any research assignments I have been a part of. At the start of each assignment I will have an explanation of what part I contributed. May set this page up as a colletion of hyperlinked citations to places where the research may be found."
+ 
+output: 
+  distill::distill_article:
+    toc: true
+---
+
+
+# Paper 1
+
+Description
+
+
+# Paper 2
+
+Description
+
+# Paper 3
+
+Description
+
+

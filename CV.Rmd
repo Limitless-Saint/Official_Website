@@ -1,0 +1,24 @@
+---
+title: "CV"
+description: "Playing with the idea of making this a button to a pdf on my home page"
+output: 
+  distill::distill_article:
+    toc: TRUE
+
+---
+
+# Education
+
+**University of Toronto** | Toronto, Canada
+
+B.Sc - Specialist in Statistics with Major in Mathematics | 2017 - 2023 (anticipated)
+
+# Experience
+
+**PureFacts Financial Solutions**| Quality Assurance - Tester | 2016 - 2018
+
+
+
+
+
+
